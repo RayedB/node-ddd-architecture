@@ -1,0 +1,32 @@
+{
+  "name": "ddd-architecture",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "test",
+    "dev": "babel-watch index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RayedB/node-ddd-architecture.git"
+  },
+  "author": "Rayed Benbrahim",
+  "license": "ISC",
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "babel-watch": "^2.0.7"
+  },
+  "bugs": {
+    "url": "https://github.com/RayedB/node-ddd-architecture/issues"
+  },
+  "homepage": "https://github.com/RayedB/node-ddd-architecture#readme",
+  "dependencies": {
+    "awilix": "^3.0.9",
+    "awilix-express": "^1.1.0",
+    "dotenv": "^6.0.0",
+    "express": "^4.16.3",
+    "path": "^0.12.7"
+  }
+}
