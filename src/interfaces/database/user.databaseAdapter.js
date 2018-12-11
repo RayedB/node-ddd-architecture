@@ -9,7 +9,9 @@ class UserAdapter {
       })
     }
 
-    findUser()
+    findUser(){
+      
+    }
   
     // doesUserExists(email) {
     //   return this.databaseAdapter.doesUserExists(email);

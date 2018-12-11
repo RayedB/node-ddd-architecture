@@ -9,13 +9,17 @@ class UserActions {
     createUser(serializedUserData){
         const newUser = new User(serializedUserData.email, serializedUserData.hash)
         this.userAdapter.storeUser(newUser)
-        // Pass object to adapter
+        
     }
 
     // Login a user
     authenticateUser(serializedCredentials){
         //Serialize user input
         //Pass to user adapter
+    }
+
+    forgottenPassword(serializedUserData){
+        const lostUser = new User(serializedUserData.email)
     }
 
     // Edit a user's information
