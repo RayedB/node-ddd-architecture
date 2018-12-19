@@ -12,6 +12,8 @@ class UserController {
         this.actions.createUser(this.serializerdUser)
     }
 
+    
+
     listUsers(){
         return "hello"
     }

@@ -5,13 +5,17 @@ import AccessTokenManager from '../../application/security/AccessTokenManager'
 const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY || "shhh";
 console.log(JWT_SECRET_KEY)
 
-class JsonWebToken extends AccessTokenManager{
+class JsonWebToken {
   generate(payload) {
-    return jwt.sign(payload, JWT_SECRET_KEY);
+    return jwt.sign(payload, JWT_SECRET_KEY, { expiresIn: '1h' });
   }
 
   decode(accessToken) {
-    return jwt.verify(accessToken, JWT_SECRET_KEY);
+    try {
+      return jwt.verify(accessToken, JWT_SECRET_KEY);
+    } catch(err) {
+      return false
+    }
   }
 
 }

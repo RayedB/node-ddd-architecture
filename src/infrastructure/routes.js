@@ -1,35 +1,38 @@
 import { Router } from 'express';
-import UserController from '../interfaces/controllers/users.controller'
+import AuthorizationController from '../interfaces/controllers/authorization.controller';
+import requireAuth from '../interfaces/security/authGuard';
 
 const router = new Router();
 
 //Auth routes
-router.post('/auth/register', (req, res) => {
-    res.status(200).json({message:"register"})
+router.post('/auth/register', async (req, res) => {
+    const authController = new AuthorizationController();
+    await authController.createUser(req.body)
+        .then((creation) => {
+            res.status(creation.code).json({message:creation.message})
+        })
+        .catch((err)=>{
+            console.log(err)
+        })
+    
 });
 
-router.post('/auth/login', (req, res) => {
-    res.status(200).json({message:"login"})
+router.post('/auth/login', async (req, res) => {
+    const authController = new AuthorizationController();
+    const authentication = await authController.authenticateUser(req.body)
+    if (authentication) {
+        res.status(200).json(authentication)
+    }
 });
 
-// UserController
-router.post('/user/create', (req,res) => {
-    const userController = new UserController(req)
-    userController.createUser()
-    res.send("ok")
-})
 
 // Protected routes
-
-router.all('/api/*', requireAuthentication)
-
-router.post('/api/hello', (req,res) => {
-    console.log("hello")
-    res.send("hello")
+router.get('/api/protected',requireAuth,async (req,res)=>{
+    res.status(200).json({message:"in protected route"})
 })
 
-function requireAuthentication(req,res,next){
-    return next()
-}
+// router.get('/messages', (req,res)=>{
+//     res.status(200).json({message:"ok"})
+// })
 
 export default router;

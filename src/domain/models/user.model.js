@@ -2,9 +2,9 @@
 
 class User {
 
-  constructor(email, password) {
+  constructor(email, hash) {
     this.email = email;
-    this.password = password;
+    this.hash = hash;
   }
 
 };

@@ -2,15 +2,35 @@ import User from '../../infrastructure/database/schema/user.schema'
 
 class UserAdapter {
 
-    storeUser(appUser) {
-      return User.create(appUser,(err,result) => {
-        if (err) return handleError(err);
-        console.log(result)
-      })
+    async storeUser(appUser) {
+      await User.create(appUser)
+        .then((user) => {
+          return
+        })
+        .catch((error)=>{
+          //return handleError(error);
+        })
     }
 
-    findUser(){
-      
+    findUser(appUser){
+      return User.findOne({email: appUser.email}, (err,user)=> {
+        // if (err) return handleError(err);
+        return user
+      });
+    }
+
+    findUserById(id){
+      return User.findById(id)
+            .then(user => {
+                return user;
+            })
+            .catch(err => {
+                return err;
+            });
+    }
+
+    authenticate(appUser){
+      console.log(appUser)
     }
   
     // doesUserExists(email) {
