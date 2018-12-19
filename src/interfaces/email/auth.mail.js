@@ -1,14 +1,14 @@
-// import mailer from '../../infrastructure/mailer/mailer'
+import Mailer from '../../infrastructure/mailer/mailer'
 
 class AuthMail {
     constructor() {
-        // this.mailer = new Mailer()
+        this.mailer = new Mailer()
     }
     sendConfirmation() {
-        console.log("send email confirmation")
+        this.mailer.sendMail("envoi d'un email")
     }
     sendResetPasswordToken() {
-        console.log("reset Password token")
+        this.mailer.sendMail("envoi d'un email")
     }
 }
 

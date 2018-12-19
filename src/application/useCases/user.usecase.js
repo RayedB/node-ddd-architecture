@@ -21,11 +21,7 @@ class UserActions {
         await this.userAdapter.storeUser(newUser);
         // Send e-mail for confirmation
 
-        await this.emailService.sendConfirmation().then(
-            console.log('ok')
-        ).catch((err) => {
-            console.log(err)
-        })
+        await this.emailService.sendConfirmation();
         return {message: 'User created successfully', code: 200};
     }
 
