@@ -5,7 +5,8 @@ const database = {}
 
 database.connect = async () => {
     //CHANGE URI WITH ENV VARIABLE
-    mongoose.connect('mongodb://'+process.env.DB_HOST+'/'+process.env.DB_NAME,{ useCreateIndex: true, useNewUrlParser: true })
+    const db = process.env.DB_NAME || 'ewsProto';
+    mongoose.connect('mongodb://'+process.env.DB_HOST+'/'+db,{ useCreateIndex: true, useNewUrlParser: true })
     
     const connection = mongoose.connection
 

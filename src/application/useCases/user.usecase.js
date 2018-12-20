@@ -18,10 +18,14 @@ class UserActions {
             return {message: 'A user with ths email already exists', code: 409};
         }
         // Create new User        
-        await this.userAdapter.storeUser(newUser);
+        const createdUser = await this.userAdapter.storeUser(newUser);
         // Send e-mail for confirmation
+        console.log(createdUser)
 
-        await this.emailService.sendConfirmation();
+        if (createdUser !== undefined){
+            await this.userAdapter.createResetToken(createdUser)
+        }
+        // await this.emailService.sendConfirmation();
         return {message: 'User created successfully', code: 200};
     }
 

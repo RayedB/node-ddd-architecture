@@ -3,10 +3,11 @@ import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
-    email: {type: String, required: true },
+    email: {type: String, required: true, unique: true },
     hash: {type: String, required: true },
-    verification_token: {type: String, required: true },
     verified: {type: String, required: true, default: false },
+    passwordResetToken: String,
+    passwordResetExpires: Date
 
 })
 const User = mongoose.model('User',userSchema);

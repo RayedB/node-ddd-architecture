@@ -1,15 +1,17 @@
-import User from '../../infrastructure/database/schema/user.schema'
+import User from '../../infrastructure/database/schema/user.schema';
+import Token from '../../infrastructure/database/schema/token.schema';
+import crypto from 'crypto';
 
 class UserAdapter {
 
     async storeUser(appUser) {
-      await User.create(appUser)
-        .then((user) => {
-          return
-        })
-        .catch((error)=>{
-          //return handleError(error);
-        })
+      const userToCreate = new User(appUser)
+      try {
+        const createdUser = await userToCreate.save()
+        return createdUser
+      } catch (err){
+        return err
+      }
     }
 
     findUser(appUser){
@@ -33,9 +35,17 @@ class UserAdapter {
       console.log(appUser)
     }
   
-    // doesUserExists(email) {
-    //   return this.databaseAdapter.doesUserExists(email);
-    // }
+    async createResetToken(appUser){
+      await Token.create({ _userId: appUser._id, token: crypto.randomBytes(16).toString('hex') })
+                .then((token)=>{
+                  console.log(token)
+                  return token
+                })
+                .catch((err)=>{
+                  console.log(err)
+                  return err
+                })
+    }
   }
   
   module.exports = UserAdapter;
