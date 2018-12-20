@@ -27,8 +27,13 @@ class AuthorizationController {
                 return userLogin
             }
         }
+    }
 
-        // this.actions.bounceUser(this.serializerdUser)
+    async confirmUser(httpRequest) {
+        if (httpRequest.query.token) {
+            this.actions.activateUser(httpRequest.query.token);
+        }
+        return {message: "no token", code: 500}
     }
 
 }

@@ -4,8 +4,8 @@ class AuthMail {
     constructor() {
         this.mailer = new Mailer()
     }
-    sendConfirmation() {
-        this.mailer.sendMail("envoi d'un email")
+    sendConfirmation(data) {
+        this.mailer.sendMail(data)
     }
     sendResetPasswordToken() {
         this.mailer.sendMail("envoi d'un email")

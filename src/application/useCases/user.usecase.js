@@ -20,13 +20,15 @@ class UserActions {
         // Create new User        
         const createdUser = await this.userAdapter.storeUser(newUser);
         // Send e-mail for confirmation
-        console.log(createdUser)
 
         if (createdUser !== undefined){
-            await this.userAdapter.createResetToken(createdUser)
+        
+            const confirmationToken = await this.userAdapter.createConfirmationToken(createdUser)
+            const confirmationEmail = {receipient: createdUser.email, token: confirmationToken.token}
+            await this.emailService.sendConfirmation(confirmationEmail);
+            return {message: 'User created successfully', code: 200};
         }
-        // await this.emailService.sendConfirmation();
-        return {message: 'User created successfully', code: 200};
+        return {message: "An error has occured, user could not be created", code: 500}
     }
 
     // Login a user
@@ -54,6 +56,10 @@ class UserActions {
 
         
 
+    }
+
+    activateUser(token){
+        this.userAdapter.validateUser(token)
     }
 
     forgottenPassword(serializedUserData){

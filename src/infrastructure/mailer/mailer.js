@@ -14,18 +14,17 @@ class Mailer {
     }
 
     sendMail(data){
-
+        console.log(data.token)
         this.nodemailerMailgun.sendMail({
-            from: 'myemail@example.com',
+            from: 'no-reply@node-ddd-app.com',
             to: 'rayed.benbrahim@gmail.com', // An array if you have multiple recipients.
             //   cc:'second@domain.com',
             //   bcc:'secretagent@company.gov',
-            subject: 'Hey you, awesome!',
+            subject: 'Confirm your account',
             //   'h:Reply-To': 'reply2this@company.com',
             //You can use "html:" to send HTML email content. It's magic!
-            html: '<b>Wow Big powerful letters</b>',
             //You can use "text:" to send plain-text content. It's oldschool!
-            text: 'Mailgun rocks, pow pow!'
+            text: 'Hello,\n\n' + 'Please verify your account by clicking the link: \nhttp:\/\/' + process.env.DB_HOST+':'+process.env.port+'/auth/confirm?token='+data.token
             }, (err, info) => {
             if (err) {
                 console.log(`Error: ${err}`);
@@ -34,12 +33,6 @@ class Mailer {
                 console.log(`Response: ${info}`);
             }
         })
-            .then((res)=> {
-                return res
-            })
-            .catch((err)=> {
-                throw err
-            })
     }
 }
 
