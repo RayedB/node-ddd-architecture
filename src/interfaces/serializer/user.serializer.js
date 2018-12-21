@@ -7,8 +7,7 @@ class UserSerializer {
     SerializeForRegister(httpBody) {
         if (httpBody.email && isEmail(httpBody.email) && httpBody.password) {
             this.email = httpBody.email.trim().toLowerCase()
-            const saltRounds = 7;
-            this.hash = bcrypt.hashSync(httpBody.password, saltRounds);
+            this.hash = this.hashPassword(httpBody.password)
             return this
         }
         
@@ -32,6 +31,11 @@ class UserSerializer {
             return true
         }
         return false
+    }
+
+    hashPassword(password) {
+        const saltRounds = 7;
+        return bcrypt.hashSync(password, saltRounds);
     }
 }
 module.exports = UserSerializer

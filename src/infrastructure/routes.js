@@ -33,6 +33,21 @@ router.get('/auth/confirm', async (req,res)=> {
     }
 })
 
+router.post('/auth/forgotten', async (req, res)=>{
+    const authController = new AuthorizationController();
+    const forgotten = await authController.forgottenPassword(req.body)
+    res.end()
+    
+})
+router.post('/auth/reset', async (req, res)=>{
+    const authController = new AuthorizationController();
+    const reset = await authController.resetPassword(req)
+    if (reset) {
+        res.status(reset.code).json({message:reset.message})
+    }
+
+})
+
 // Protected routes
 router.get('/api/protected',requireAuth,async (req,res)=>{
     res.status(200).json({message:"in protected route"})

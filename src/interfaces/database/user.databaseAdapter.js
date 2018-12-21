@@ -14,9 +14,9 @@ class UserAdapter {
       }
     }
 
-    async findUser(appUser){
+    async findUser(userEmail){
       try{
-        const foundUser = await User.findOne({email: appUser.email})
+        const foundUser = await User.findOne({email:userEmail})
         return foundUser
       } catch (err){
         return err
@@ -45,7 +45,7 @@ class UserAdapter {
 
     async validateUser(token){
       try {
-        const foundToken = await Token.findOne({token: token})
+        const foundToken = await this.findToken(token)
         if (foundToken == null){
           return {code: 400, message: "token not found"}
         }
@@ -62,6 +62,36 @@ class UserAdapter {
       } catch (error) {
         return error
       }      
+    }
+
+    async resetUserPassword(user){
+      try {
+        const foundToken = await this.findToken(user.token)
+        if (foundToken == null){
+          return {code: 400, message: "token not found"}
+        }
+        const verifiedUser = await User.findOne({_id: foundToken._userId})
+        if (verifiedUser == null){
+          return {code: 400, message: "No user linked to this token"}
+        }
+        verifiedUser.hash = user.hash
+        await verifiedUser.save()
+        return {code:200, message: "password updated successfully"}
+      } catch (error) {
+        return {code: 400, message: error}
+      }
+    }
+
+    async findToken(token) {
+      try{
+        const foundToken = await Token.findOne({token: token})
+        if (foundToken == null){
+          return {code: 400, message: "token not found"}
+        }
+        return foundToken
+      } catch (error) {
+        return {code:400, message: error}
+      }
     }
   }
   

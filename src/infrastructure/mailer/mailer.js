@@ -20,20 +20,23 @@ class Mailer {
             to: 'rayed.benbrahim@gmail.com', // An array if you have multiple recipients.
             //   cc:'second@domain.com',
             //   bcc:'secretagent@company.gov',
-            subject: 'Confirm your account',
+            subject: data.subject,
             //   'h:Reply-To': 'reply2this@company.com',
             //You can use "html:" to send HTML email content. It's magic!
             //You can use "text:" to send plain-text content. It's oldschool!
-            text: 'Hello,\n\n' + 'Please verify your account by clicking the link: \nhttp:\/\/' + process.env.DB_HOST+':'+process.env.port+'/auth/confirm?token='+data.token
+            text: data.text
             }, (err, info) => {
             if (err) {
                 console.log(`Error: ${err}`);
+                return err
             }
             else {
                 console.log(`Response: ${info}`);
+                return
             }
         })
     }
+
 }
 
 module.exports = Mailer

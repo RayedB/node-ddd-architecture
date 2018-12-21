@@ -37,6 +37,29 @@ class AuthorizationController {
         return confirmation
     }
 
+    async forgottenPassword(httpBody) {
+        if (httpBody.email == undefined) {
+            return {message: "no email sent", code: 500} 
+        }
+        const email = httpBody.email.trim().toLowerCase()
+        const sendToken = await this.actions.forgottenPassword(email)
+        return
+    }
+
+    async resetPassword(httpRequest) {
+        if (httpRequest.query.token == undefined) {
+            return {message: "no token", code: 500}
+        }
+        const serializedUser = this.serializerUser.SerializeForRegister(httpRequest.body);
+        if ( serializedUser instanceof UserSerializer){
+            serializedUser.token = httpRequest.query.token
+            console.log(serializedUser)
+            const resetPassword = await this.actions.resetPassword(serializedUser);
+            return resetPassword
+        }
+        return {code: 400, message:"An error has occured, could not reset password"}
+    }
+
 }
 
 export default AuthorizationController;

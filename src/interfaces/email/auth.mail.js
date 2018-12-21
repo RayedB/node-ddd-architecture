@@ -5,10 +5,17 @@ class AuthMail {
         this.mailer = new Mailer()
     }
     sendConfirmation(data) {
+        data.subject = 'Confirm your account',
+        data.text = 'Hello,\n\n' + 'Please verify your account by clicking the link: \nhttp:\/\/' + process.env.DB_HOST+':'+process.env.port+'/auth/confirm?token='+data.token
         this.mailer.sendMail(data)
+        return
     }
-    sendResetPasswordToken() {
-        this.mailer.sendMail("envoi d'un email")
+    sendResetPasswordToken(data) {
+        data.subject = 'Reset your password'
+        data.text = 'Hello,\n\n' + 'Please click here to reset your password: \nhttp:\/\/' + process.env.DB_HOST+':'+process.env.port+'/auth/reset?token='+data.token
+        this.mailer.sendMail(data)
+        return
+        
     }
 }
 

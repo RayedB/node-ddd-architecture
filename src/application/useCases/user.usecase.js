@@ -9,17 +9,16 @@ class UserActions {
         this.userAdapter = new UserAdapter();
         this.emailService = new AuthMail()
     }
-
+// USER REGISTRATION
     async findOrCreateUser(serializedUserData){
         const newUser = new User(serializedUserData.email, serializedUserData.hash)
-        // Look for existing user
-        const foundUsers = await this.userAdapter.findUser(newUser)
+
+        const foundUsers = await this.userAdapter.findUser(newUser.email)
         if (foundUsers){
             return {message: 'A user with ths email already exists', code: 409};
         }
-        // Create new User        
+
         const createdUser = await this.userAdapter.storeUser(newUser);
-        // Send e-mail for confirmation
 
         if (createdUser !== undefined){
             const sentToken = await this.sendConfirmationToken(createdUser)
@@ -29,10 +28,27 @@ class UserActions {
         return {message: "An error has occured, user could not be created", code: 400}
     }
 
-    // Login a user
+    async sendConfirmationToken(user) {
+        const confirmationToken = await this.userAdapter.createConfirmationToken(user)
+            const confirmationEmail = {receipient: user.email, token: confirmationToken.token}
+            if (user.verified){
+                await this.emailService.sendResetPasswordToken(confirmationEmail);
+                return
+            }
+            await this.emailService.sendConfirmation(confirmationEmail);
+            return {message: 'User created successfully', code: 200};
+            
+    }
+
+    async activateUser(token){
+        const activation = await this.userAdapter.validateUser(token)
+        return activation
+    }
+    // END OF USER REGISTRATION
+
+    // USER LOGIN
     async loginUser(serializedCredentials){
-        
-        const requestedUser = await this.userAdapter.findUser(serializedCredentials)
+        const requestedUser = await this.userAdapter.findUser(serializedCredentials.email)
         if (requestedUser == null) {
             return {code:400, message:"An error has occured"}
         }
@@ -47,7 +63,6 @@ class UserActions {
             }
         }
 
-
         const authorized = await serializedCredentials.ComparePassword(serializedCredentials.password, requestedUser.hash)
         if (authorized) {
             const jsontoken = new JsonWebToken();
@@ -58,32 +73,30 @@ class UserActions {
             const jwt = jsontoken.generate(payload)
             return {jwt: jwt}
         }
-
     }
 
-    async sendConfirmationToken(user) {
-        const confirmationToken = await this.userAdapter.createConfirmationToken(user)
-            const confirmationEmail = {receipient: user.email, token: confirmationToken.token}
-            await this.emailService.sendConfirmation(confirmationEmail);
-            return {message: 'User created successfully', code: 200};
+    async forgottenPassword(email){
+        const foundUser = await this.userAdapter.findUser(email)
+        if (foundUser) {
+            this.sendConfirmationToken(foundUser)
+        }
+        return
     }
 
-    async activateUser(token){
-        const activation = await this.userAdapter.validateUser(token)
-        return activation
+    async resetPassword(user) {
+        const resetPassword = await this.userAdapter.resetUserPassword(user)
+        return resetPassword
     }
+    // END OF USER LOGIN
 
-    forgottenPassword(serializedUserData){
-        const lostUser = new User(serializedUserData.email)
-    }
-
+    // UTILS FUNCTION
     tomorrow(){
         let date = new Date()
         date.setDate(date.getDate() + 1);
         return date
     }
 
-    // Edit a user's information
+    
 
 }
 
