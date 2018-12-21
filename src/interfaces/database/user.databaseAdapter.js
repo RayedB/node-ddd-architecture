@@ -14,11 +14,13 @@ class UserAdapter {
       }
     }
 
-    findUser(appUser){
-      return User.findOne({email: appUser.email}, (err,user)=> {
-        // if (err) return handleError(err);
-        return user
-      });
+    async findUser(appUser){
+      try{
+        const foundUser = await User.findOne({email: appUser.email})
+        return foundUser
+      } catch (err){
+        return err
+      }
     }
 
     findUserById(id){
@@ -29,10 +31,6 @@ class UserAdapter {
             .catch(err => {
                 return err;
             });
-    }
-
-    authenticate(appUser){
-      console.log(appUser)
     }
   
     async createConfirmationToken(appUser){
@@ -46,12 +44,24 @@ class UserAdapter {
     }
 
     async validateUser(token){
-      const foundToken = await Token.findOne({token: token})
-      if (foundToken == null){
-        return {code: 404, message: "token not found"}
-      }
-      const verifiedUser = await User.findOneAndUpdate({_id: foundToken._userId}, {verified: true})
-      console.log(verifiedUser)
+      try {
+        const foundToken = await Token.findOne({token: token})
+        if (foundToken == null){
+          return {code: 400, message: "token not found"}
+        }
+        const verifiedUser = await User.findOne({_id: foundToken._userId})
+        if (verifiedUser == null){
+          return {code: 400, message: "No user linked to this token"}
+        }
+        if (verifiedUser.verified){
+          return {code:200, message: "User already verified, please login" }
+        }
+        verifiedUser.verified = true;
+        await verifiedUser.save()
+        return {code:200, message: "account has been verified"}
+      } catch (error) {
+        return error
+      }      
     }
   }
   

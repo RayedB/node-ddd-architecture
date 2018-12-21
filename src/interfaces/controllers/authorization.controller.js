@@ -30,10 +30,11 @@ class AuthorizationController {
     }
 
     async confirmUser(httpRequest) {
-        if (httpRequest.query.token) {
-            this.actions.activateUser(httpRequest.query.token);
+        if (httpRequest.query.token == undefined) {
+            return {message: "no token", code: 500}
         }
-        return {message: "no token", code: 500}
+        const confirmation = await this.actions.activateUser(httpRequest.query.token);
+        return confirmation
     }
 
 }

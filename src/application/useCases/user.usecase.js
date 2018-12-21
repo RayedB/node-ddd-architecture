@@ -22,48 +22,65 @@ class UserActions {
         // Send e-mail for confirmation
 
         if (createdUser !== undefined){
-        
-            const confirmationToken = await this.userAdapter.createConfirmationToken(createdUser)
-            const confirmationEmail = {receipient: createdUser.email, token: confirmationToken.token}
-            await this.emailService.sendConfirmation(confirmationEmail);
-            return {message: 'User created successfully', code: 200};
+            const sentToken = await this.sendConfirmationToken(createdUser)
+            return sentToken
+            
         }
-        return {message: "An error has occured, user could not be created", code: 500}
+        return {message: "An error has occured, user could not be created", code: 400}
     }
 
     // Login a user
     async loginUser(serializedCredentials){
         
-        const requestedUser = await this.userAdapter.findUser(serializedCredentials.email)
+        const requestedUser = await this.userAdapter.findUser(serializedCredentials)
+        if (requestedUser == null) {
+            return {code:400, message:"An error has occured"}
+        }
 
-        if (requestedUser){
-            const authorized = await serializedCredentials.ComparePassword(serializedCredentials.password, requestedUser.hash)
-            if (authorized) {
-                const jsontoken = new JsonWebToken();
-                const payload = {
-                    id: requestedUser._id,
-                    email: requestedUser.email
-                }
-                const jwt = jsontoken.generate(payload)
-                return {jwt: jwt}
+        const tomorrow = this.tomorrow()
+        if (requestedUser.verified == false && requestedUser.createdAt < tomorrow ) {
+            return {code:409, message:"Please verify your account"}
+        } else if (requestedUser.verified == false) {
+            const resendToken = await this.sendConfirmationToken(requestedUser)
+            if (resenedToken.code == 200) {
+                return {message: 'Token sent successfully', code: 200};
             }
         }
-        // Find User
-        // Verify Password 
-        // Generate token
 
-        // Return object with status code and jwt
 
-        
+        const authorized = await serializedCredentials.ComparePassword(serializedCredentials.password, requestedUser.hash)
+        if (authorized) {
+            const jsontoken = new JsonWebToken();
+            const payload = {
+                id: requestedUser._id,
+                email: requestedUser.email
+            }
+            const jwt = jsontoken.generate(payload)
+            return {jwt: jwt}
+        }
 
     }
 
-    activateUser(token){
-        this.userAdapter.validateUser(token)
+    async sendConfirmationToken(user) {
+        const confirmationToken = await this.userAdapter.createConfirmationToken(user)
+            const confirmationEmail = {receipient: user.email, token: confirmationToken.token}
+            await this.emailService.sendConfirmation(confirmationEmail);
+            return {message: 'User created successfully', code: 200};
+    }
+
+    async activateUser(token){
+        const activation = await this.userAdapter.validateUser(token)
+        return activation
     }
 
     forgottenPassword(serializedUserData){
         const lostUser = new User(serializedUserData.email)
+    }
+
+    tomorrow(){
+        let date = new Date()
+        date.setDate(date.getDate() + 1);
+        return date
     }
 
     // Edit a user's information

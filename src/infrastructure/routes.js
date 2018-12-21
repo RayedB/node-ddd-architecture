@@ -28,9 +28,10 @@ router.post('/auth/login', async (req, res) => {
 router.get('/auth/confirm', async (req,res)=> {
     const authController = new AuthorizationController();
     const confirmation = await authController.confirmUser(req)
-    console.log(confirmation)
+    if (confirmation) {
+        res.status(confirmation.code).json({message:confirmation.message})
+    }
 })
-
 
 // Protected routes
 router.get('/api/protected',requireAuth,async (req,res)=>{
