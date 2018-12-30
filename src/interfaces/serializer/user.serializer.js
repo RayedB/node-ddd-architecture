@@ -25,6 +25,11 @@ class UserSerializer {
         return this
     }
 
+    SerializeForReset(httpBody) {
+        this.hash = this.hashPassword(httpBody.password)
+        return this
+    }
+
     async ComparePassword(password, hash) {
         const match = await bcrypt.compare(password, hash);
         if (match) {

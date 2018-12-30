@@ -50,7 +50,7 @@ class AuthorizationController {
         if (httpRequest.query.token == undefined) {
             return {message: "no token", code: 500}
         }
-        const serializedUser = this.serializerUser.SerializeForRegister(httpRequest.body);
+        const serializedUser = this.serializerUser.SerializeForReset(httpRequest.body);
         if ( serializedUser instanceof UserSerializer){
             serializedUser.token = httpRequest.query.token
             console.log(serializedUser)
